@@ -32,6 +32,24 @@ echo $PASSWORD | sudo -S bash -c 'chmod 777 -R /var/mail/sendmail'
 
 #sed '/test/d' myfile
 
+
+QUESTION=$(zenity --question --text="Создать ярлык на рабочем столе?" --width=300)
+
+	accepted=$?
+	if [ $accepted = 0 ]; then
+        username=$(whoami)
+
+	    if [ -d '/home/'$username'/Рабочий стол/' ]; then
+            ln -s '/var/mail/sendmail/new' '/home/'$username'/Рабочий стол/sendmail'
+        fi
+        if [ -d '/home/'$username'/Desktop/' ]; then
+            ln -s '/var/mail/sendmail/new' '/home/'$username'/Desktop/sendmail'
+        fi
+	fi
+
+zenity --info --width=300 --text "Заглушка для sendmail успешно установлена. Ваши письма теперь будут сохраняться в папку
+/var/mail/sendmail/new/"
+
 }
 
 start() {
@@ -55,7 +73,7 @@ start() {
 }
 
 if [[ "$USER" != 'root' ]]; then
-	OUTPUT=$(zenity --forms --title="Установка Fake Sendmail" --text="Введите пароль root" --separator="," --add-entry="password" --width=300 --height=50)
+	OUTPUT=$(zenity --forms --title="Установка Fake Sendmail" --text="Введите пароль root" --separator="," --add-password="password" --width=300 )
 	accepted=$?
 	if [ $accepted = 0 ]; then
 		PASSWORD=$(awk -F, '{print $1}' <<<$OUTPUT)
