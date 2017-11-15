@@ -22,15 +22,17 @@ done
 chmod 777 \$name
 chmod -x \$name
 /bin/true
-" > /home/varrcan/fakesendmail.sh'
+" > /usr/bin/fakesendmail.sh'
 
-echo $PASSWORD | sudo -S bash -c 'chmod +x /home/varrcan/fakesendmail.sh'
+echo $PASSWORD | sudo -S bash -c 'chmod +x /usr/bin/fakesendmail.sh'
 echo $PASSWORD | sudo -S bash -c 'chmod 777 -R /var/mail/sendmail'
 
-#PHP=$( php -r 'print_r((float)phpversion());')
-#echo $PHP
 
-#sed '/test/d' myfile
+find /etc/php -name php.ini | while read files
+    do
+        echo $PASSWORD | sudo -S bash -c "cp '$files' '$files.bak'"
+        echo $PASSWORD | sudo -S bash -c "sed -i '/sendmail_path/c sendmail_path=\/usr\/bin\/fakesendmail.sh' $files"
+    done
 
 
 QUESTION=$(zenity --question --text="Создать ярлык на рабочем столе?" --width=300)
@@ -52,9 +54,21 @@ zenity --info --width=300 --text "Заглушка для sendmail успешн�
 
 }
 
+
+uninstall() {
+
+find /etc/php -name php.ini | while read files
+    do
+        echo $PASSWORD | sudo -S bash -c "mv -f '$files.bak' '$files'"
+    done
+
+zenity --info --width=300 --text "Заглушка для sendmail успешно удалена"
+
+}
+
 start() {
 
-	START_OPTION=$(zenity --list --title="Заглушка для sendmail" --column="#" --column="Action" --width=300 --height=200 \
+	START_OPTION=$(zenity --list --title="Заглушка для sendmail" --text="Выберите действие" --column="#" --column="Action" --width=300 --height=200 \
 	1 "Установить" \
 	2 "Удалить")
 
@@ -73,7 +87,7 @@ start() {
 }
 
 if [[ "$USER" != 'root' ]]; then
-	OUTPUT=$(zenity --forms --title="Установка Fake Sendmail" --text="Введите пароль root" --separator="," --add-password="password" --width=300 )
+	OUTPUT=$(zenity --forms --title="Установка Fake Sendmail" --text="Введите пароль root" --separator="," --add-password="")
 	accepted=$?
 	if [ $accepted = 0 ]; then
 		PASSWORD=$(awk -F, '{print $1}' <<<$OUTPUT)
