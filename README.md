@@ -26,10 +26,6 @@ Ubuntu, Kubuntu, Linux Mint.
 _Скрипт был написан для тестирования почты на локальной копии сайта. Использование на боевом сервере исключительно на свой страх и риск._
 
 
-![screenshot1](https://share.varrcan.me/img161120171107.png)
-
-![screenshot2](https://share.varrcan.me/img16112017748d.png)
-
 ![screenshot3](https://share.varrcan.me/img1611201700d3.png)
 
 ![screenshot4](https://share.varrcan.me/img161120179c5f.png)
