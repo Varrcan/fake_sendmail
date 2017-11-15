@@ -2,38 +2,52 @@
 
 install() {
 
-echo $PASSWORD | sudo -S bash -c 'echo "#!/usr/bin/env bash
+INSTALL_OPTION=$(zenity --list --title="Заглушка для sendmail" --text="Как сохранять письма?" --column="#" --column="Action" --width=300 --height=200 \
+	1 "В текстовом виде" \
+	2 "В почтовом формате .eml")
 
+	accepted=$?
+	if [ $accepted = 0 ]; then
+		if [ $INSTALL_OPTION = 1 ]; then
+			echo $PASSWORD | sudo -S bash -c 'echo "#!/usr/bin/env bash
 prefix=\"/var/mail/sendmail/new\"
-numPath=\"/var/mail/sendmail\"
-
-if [ ! -f \$numPath/num ]; then
-echo \"0\" > \$numPath/num
-fi
-num=\`cat \$numPath/num\`
-num=\$((\$num + 1))
-echo \$num > \$numPath/num
-
-name=\"\$prefix/mail_\$num.txt\"
+date=\`date \+\%Y-\%m-\%d@\%H:\%M:\%S\`
+name=\"\$prefix/\$date.txt\"
 while read line
 do
-echo \$line >> \$name
+echo \"\$line\" >> \$name
 done
-chmod 777 \$name
+chmod 666 \$name
 chmod -x \$name
 /bin/true
 " > /usr/bin/fakesendmail.sh'
+		fi
+
+		if [ $INSTALL_OPTION = 2 ]; then
+			echo $PASSWORD | sudo -S bash -c 'echo "#!/usr/bin/env bash
+prefix=\"/var/mail/sendmail/new\"
+date=\`date \+\%Y-\%m-\%d@\%H:\%M:\%S\`
+name=\"\$prefix/\$date.eml\"
+while IFS= read line
+do
+echo \"\$line\" >> \$name
+done
+chmod 666 \$name
+chmod -x \$name
+" > /usr/bin/fakesendmail.sh'
+		fi
+	else
+		exit
+	fi
 
 echo $PASSWORD | sudo -S bash -c 'chmod +x /usr/bin/fakesendmail.sh'
 echo $PASSWORD | sudo -S bash -c 'chmod 777 -R /var/mail/sendmail'
-
 
 find /etc/php -name php.ini | while read files
     do
         echo $PASSWORD | sudo -S bash -c "cp '$files' '$files.bak'"
         echo $PASSWORD | sudo -S bash -c "sed -i '/sendmail_path/c sendmail_path=\/usr\/bin\/fakesendmail.sh' $files"
     done
-
 
 QUESTION=$(zenity --question --text="Создать ярлык на рабочем столе?" --width=300)
 
@@ -42,18 +56,17 @@ QUESTION=$(zenity --question --text="Создать ярлык на рабоче
         username=$(whoami)
 
 	    if [ -d '/home/'$username'/Рабочий стол/' ]; then
-            ln -s '/var/mail/sendmail/new' '/home/'$username'/Рабочий стол/sendmail'
-        fi
-        if [ -d '/home/'$username'/Desktop/' ]; then
-            ln -s '/var/mail/sendmail/new' '/home/'$username'/Desktop/sendmail'
-        fi
+          ln -s '/var/mail/sendmail/new' '/home/'$username'/Рабочий стол/sendmail'
+      fi
+      if [ -d '/home/'$username'/Desktop/' ]; then
+          ln -s '/var/mail/sendmail/new' '/home/'$username'/Desktop/sendmail'
+      fi
 	fi
 
 zenity --info --width=300 --text "Заглушка для sendmail успешно установлена. Ваши письма теперь будут сохраняться в папку
 /var/mail/sendmail/new/"
 
 }
-
 
 uninstall() {
 
@@ -87,7 +100,8 @@ start() {
 }
 
 if [[ "$USER" != 'root' ]]; then
-	OUTPUT=$(zenity --forms --title="Установка Fake Sendmail" --text="Введите пароль root" --separator="," --add-password="")
+	OUTPUT=$(zenity --forms --title="Fake Sendmail" --text="Введите пароль root" --separator="," --add-password="")
+
 	accepted=$?
 	if [ $accepted = 0 ]; then
 		PASSWORD=$(awk -F, '{print $1}' <<<$OUTPUT)
