@@ -41,6 +41,8 @@ chmod -x \$name
 	fi
 
 echo $PASSWORD | sudo -S bash -c 'chmod +x /usr/bin/fakesendmail.sh'
+echo $PASSWORD | sudo -S bash -c 'mkdir /var/mail/sendmail'
+echo $PASSWORD | sudo -S bash -c 'mkdir /var/mail/sendmail/new'
 echo $PASSWORD | sudo -S bash -c 'chmod 777 -R /var/mail/sendmail'
 
 find /etc/php -name php.ini | while read files
