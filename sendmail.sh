@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+reload_apache() {
+echo $PASSWORD | sudo -S bash -c 'service apache2 restart'
+}
+
 install() {
 
 INSTALL_OPTION=$(zenity --list --title="Заглушка для sendmail" --text="Как сохранять письма?" --column="#" --column="Action" --width=300 --height=200 \
@@ -65,6 +69,7 @@ QUESTION=$(zenity --question --text="Создать ярлык на рабоче
       fi
 	fi
 
+reload_apache
 zenity --info --width=300 --text "Заглушка для sendmail успешно установлена. Ваши письма теперь будут сохраняться в папку
 /var/mail/sendmail/new/"
 
@@ -77,6 +82,7 @@ find /etc/php -name php.ini | while read files
         echo $PASSWORD | sudo -S bash -c "mv -f '$files.bak' '$files'"
     done
 
+reload_apache
 zenity --info --width=300 --text "Заглушка для sendmail успешно удалена"
 
 }
