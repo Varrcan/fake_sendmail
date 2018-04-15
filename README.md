@@ -9,7 +9,7 @@ Sendmail-заглушка для Linux
 #### Установка:
 1. Откройте консоль и вставьте код
 
-	`wget --no-check-certificate https://raw.githubusercontent.com/Varrcan/fake_sendmail/master/sendmail.sh && chmod +x ./sendmail.sh && ./sendmail.sh`
+	`wget --no-check-certificate https://raw.githubusercontent.com/varrcan/fake_sendmail/master/sendmail.sh && chmod +x ./sendmail.sh && ./sendmail.sh`
 	
 2. В появившемся окне введите root пароль
 3. Выберите пункт "Установить"
@@ -26,6 +26,6 @@ Ubuntu, Kubuntu, Linux Mint.
 _Скрипт был написан для тестирования почты на локальной копии сайта. Использование на боевом сервере исключительно на свой страх и риск._
 
 
-![screenshot3](https://share.varrcan.me/img1611201700d3.png)
+![screenshot3](http://share.varrcan.me/img1611201700d3.png)
 
-![screenshot4](https://share.varrcan.me/img161120179c5f.png)
+![screenshot4](http://share.varrcan.me/img161120179c5f.png)
